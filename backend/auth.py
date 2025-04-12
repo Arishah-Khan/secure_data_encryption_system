@@ -1,12 +1,13 @@
+import streamlit as st
 from pymongo import MongoClient
 import hashlib
 import os
 import base64
 
-client = MongoClient(os.getenv("MONGO_URI"))
+client = MongoClient(st.secrets["MONGO_URI"]) 
 db = client.secureshare
 
-# Constants
+
 SALT_SIZE = 16
 ITERATIONS = 100_000
 HASH_NAME = 'sha256'
@@ -25,7 +26,6 @@ def verify_pass(password: str, stored: str) -> bool:
 
 def signup(email, password):
     try:
-        # Check if email already exists
         if db.users.find_one({"email": email}):
             return "email_already_exists" 
         
@@ -51,4 +51,3 @@ def login(email, password):
     except Exception as e:
         print(f"Login Error: {e}")
         return "login_failed"
-
